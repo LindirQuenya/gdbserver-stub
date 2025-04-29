@@ -5,19 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { R3000 } from "./r3000.js";
+import { PIM } from "./pim.js";
 import { GDBServerStub } from "./gdb-server-stub.js";
+import PromiseSocket, {TimeoutError} from "promise-socket";
 
-function runServer() {
-  const r3000 = new R3000();
-  const server = new GDBServerStub(r3000);
+export async function runServer() {
+  const pyConn = new PromiseSocket();
+  await pyConn.connect(11111, 'localhost');
+  const pim = new PIM(pyConn);
+  const server = new GDBServerStub(pim);
   server.start("localhost", 2424);
-  function runCpu() {
-    r3000.run(100);
-  }
-  setInterval(runCpu, 100);
 }
 
 if (process.env.NODE_ENV != 'test') {
-  runServer();
+  await runServer();
 }

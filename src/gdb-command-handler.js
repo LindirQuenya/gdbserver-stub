@@ -19,109 +19,109 @@ export class GDBCommandHandler extends EventEmitter {
    * Handles ? command that queries the reason of the half.
    * @returns the reason of the halt. e.g. "S05" for SIG_TRAP
    */
-  handleHaltReason() { return unsupported(); }
+  async handleHaltReason() { return unsupported(); }
 
   /**
    * Handles step execution. It executes one instruction and stops.
    * @param {number|undefined} address The address at which the handler executes.
    *    If undefined, the current address should be used.
    */
-  handleStep(address) { return unsupported(); }
+  async handleStep(address) { return unsupported(); }
 
   /**
    * Handles continue execution. It executes until the next break point.
    * @param {number|undefined} address The address at which the handler executes.
    *    If undefined, the current address should be used.
    */
-  handleContinue(address) { return unsupported(); }
+  async handleContinue(address) { return unsupported(); }
 
   /**
    * Handles read of the memory content.
    * @param {number} address The address to start reading.
    * @param {number} length The number of units (usually bytes) to be read.
    */
-  handleReadMemory(address, length) { return unsupported(); }
+  async handleReadMemory(address, length) { return unsupported(); }
 
   /**
    * Handles write to the memory.
    * @param {number} address The address to start writing.
    * @param {number[]} values The values to be written.
    */
-  handleWriteMemory(address, values) { return unsupported(); }
+  async handleWriteMemory(address, values) { return unsupported(); }
 
   /**
    * Handles read of all register values.
    * @param {number|undefined} threadId The target thread's ID.
    */
-  handleReadRegisters() { return unsupported(); }
+  async handleReadRegisters() { return unsupported(); }
 
   /**
    * Handles write to all register values.
    */
-  handleWriteRegisters(bytes) { return unsupported(); }
+  async handleWriteRegisters(bytes) { return unsupported(); }
 
   /**
    * Handles read the value of the register at the index.
    * @param {number|undefined} index The index of the target register.
    */
-  handleReadRegister(index) { return unsupported(); }
+  async handleReadRegister(index) { return unsupported(); }
 
   /**
    * Handles querying of supported features.
    * @param {object[]} features The features that GDB supports.
    */
-  handleQSupported(features) { return unsupported(); }
+  async handleQSupported(features) { return unsupported(); }
 
   /**
    * Handles starting NoAckMode.
    */
-  handleStartNoAckMode() { return unsupported(); }
+  async handleStartNoAckMode() { return unsupported(); }
 
   /**
    * Handles querying of thread info. Returns a list of Thread IDs.
    */
-  handleThreadInfo() { return unsupported(); }
+  async handleThreadInfo() { return unsupported(); }
 
   /**
    * Handles querying of the current Thread ID.
    */
-  handleCurrentThread() { return unsupported(); }
+  async handleCurrentThread() { return unsupported(); }
 
   /**
    * Handles querying of information of the register at the index.
    * @param {number} index The register's index
    */
-  handleRegisterInfo(index) { return unsupported(); }
+  async handleRegisterInfo(index) { return unsupported(); }
 
   /**
    * Handles querying of the GDB host information.
    * e.g.: 'triple:6d697073656c2d756e6b6e6f776e2d6c696e75782d676e75;endian:little;ptrsize:4'
    */
-  handleHostInfo() { return unsupported(); }
+  async handleHostInfo() { return unsupported(); }
 
   /**
    * Gets information about the address range that contains address.
    * e.g. 'start:2;size:fffffffe;permissions:rwx;';
    */
-  handleMemoryRegionInfo(address) { return unsupported() }
+  async handleMemoryRegionInfo(address) { return unsupported() }
 
   /**
    * Selects the thread for step and continue execution.
    * @param {number} threadId The selected Thread ID
    */
-  handleSelectExecutionThread(threadId) { return unsupported(); }
+  async handleSelectExecutionThread(threadId) { return unsupported(); }
 
   /**
    * Selects the thread for read/write registers.
    * @param {number} threadId The selected Thread ID
    */
-  handleSelectRegisterThread(threadId) { return unsupported(); }
+  async handleSelectRegisterThread(threadId) { return unsupported(); }
 
   /**
    * Selects the thread for read/write memory.
    * @param {number} threadId The selected Thread ID
    */
-  handleSelectMemoryThread(threadId) { return unsupported(); }
+  async handleSelectMemoryThread(threadId) { return unsupported(); }
 
   /**
    * Handles addding a breakpoint.
@@ -134,7 +134,7 @@ export class GDBCommandHandler extends EventEmitter {
    * @param {number} address The address of the breakpoint
    * @param {number} kind Target specific. Usually the breakpoint size in bytes
    */
-  handleAddBreakpoint(type, address, kind) { return unsupported(); }
+  async handleAddBreakpoint(type, address, kind) { return unsupported(); }
 
   /**
    * Handles removing a breakpoint.
@@ -147,5 +147,5 @@ export class GDBCommandHandler extends EventEmitter {
    * @param {number} address The address of the breakpoint
    * @param {number} kind Target specific. Usually the breakpoint size in bytes
    */
-  handleRemoveBreakpoint(type, address, kind) { return unsupported(); }
+  async handleRemoveBreakpoint(type, address, kind) { return unsupported(); }
 }

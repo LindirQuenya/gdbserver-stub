@@ -49,7 +49,7 @@ export class GDBServerStub {
     });
   }
 
-  onData(socket, data) {
+  async onData(socket, data) {
     let input = data.toString();
     while (input.length > 0) {
       let m;
@@ -57,14 +57,14 @@ export class GDBServerStub {
         // ack
         trace(`<-:${m[0]}`);
       } else if (m = input.match(/^[\x03]/)) {
-        this.handler.handleInterruption();
+        await this.handler.handleInterruption();
       } else if (m = input.match(/^\$([^#]*)#([0-9a-zA-Z]{2})/)) {
         trace(`<-:${m[0]}`);
         const packet = m[1];
         const checksum = parseInt(m[2], 16);
         const expected = this.computeChecksum(packet);
         if (checksum == expected) {
-          this.handlePacket(socket, packet);
+          await this.handlePacket(socket, packet);
         } else {
           trace(`Invalid checksum. Expected ${expected.toString(16)} but received ${m[2]} for packet ${packet}`);
         }
@@ -78,7 +78,7 @@ export class GDBServerStub {
     }
   }
 
-  handlePacket(socket, packet) {
+  async handlePacket(socket, packet) {
     if (!this.noAckMode) {
       // Reply with an acknowledgement first.
       trace(`->:+`);
@@ -88,16 +88,16 @@ export class GDBServerStub {
     let reply;
     let m;
     if (packet == "?") {
-      reply = this.handler.handleHaltReason();
+      reply = await this.handler.handleHaltReason();
     } else if (packet == "g") {
-      reply = this.handler.handleReadRegisters();
+      reply = await this.handler.handleReadRegisters();
     } else if (m = packet.match(/^G([0-9a-zA-Z]+)/)) {
       let values = _hexToBinary(m[1]);
-      reply = this.handler.handleWriteRegisters(values);
+      reply = await this.handler.handleWriteRegisters(values);
     } else if (m = packet.match(/^m([0-9a-zA-Z]+),([0-9a-zA-Z]+)/)) {
       const address = parseInt(m[1], 16);
       const length = parseInt(m[2], 16);
-      reply = this.handler.handleReadMemory(address, length);
+      reply = await this.handler.handleReadMemory(address, length);
     } else if (m = packet.match(/^M([0-9a-zA-Z]+),([0-9a-zA-Z]+):([0-9a-zA-Z]+)/)) {
       const address = parseInt(m[1], 16);
       const length = parseInt(m[2], 16);
@@ -107,20 +107,20 @@ export class GDBServerStub {
         // match the incoming data. We just reply with error 1 here.
         reply = error(0);
       } else {
-        reply = this.handler.handleWriteMemory(address, bytes);
+        reply = await this.handler.handleWriteMemory(address, bytes);
       }
     } else if (m = packet.match(/^s([0-9a-zA-Z]+)?/)) {
       let address;
       if (m[1] !== undefined) {
         address = parseInt(m[1], 16);
       }
-      reply = this.handler.handleStep(address);
+      reply = await this.handler.handleStep(address);
     } else if (m = packet.match(/^c([0-9a-zA-Z]+)?/)) {
       let address;
       if (m[1] !== undefined) {
         address = parseInt(m[1], 16);
       }
-      reply = this.handler.handleContinue(address);
+      reply = await this.handler.handleContinue(address);
     } else if (m = packet.match(/^qSupported:(.*)/)) {
       let features = m[1].split(';').map(x => {
         let key = x;
@@ -140,30 +140,30 @@ export class GDBServerStub {
         obj[key] = value;
         return obj;
       });
-      reply = this.handler.handleQSupported(features);
+      reply = await this.handler.handleQSupported(features);
     } else if (m = packet.match(/^QStartNoAckMode/)) {
-      reply = this.handler.handleStartNoAckMode();
+      reply = await this.handler.handleStartNoAckMode();
       if (reply == ok()) {
         this.noAckMode = true;
       }
     } else if (m = packet.match(/^qfThreadInfo/)) {
-      reply = this.handler.handleThreadInfo();
+      reply = await this.handler.handleThreadInfo();
     } else if (m = packet.match(/^qsThreadInfo/)) {
       // l indicates the end of the list.
       reply = ok('l');
     } else if (m = packet.match(/^qC/)) {
-      reply = this.handler.handleCurrentThread();
+      reply = await this.handler.handleCurrentThread();
     } else if (m = packet.match(/^H([cgm])(-?[0-9]+)/)) {
       const threadId = parseInt(m[2], 16);
       switch (m[1]) {
         case 'c':
-          reply = this.handler.handleSelectExecutionThread(threadId);
+          reply = await this.handler.handleSelectExecutionThread(threadId);
           break;
         case 'm':
-          reply = this.handler.handleSelectMemoryThread(threadId);
+          reply = await this.handler.handleSelectMemoryThread(threadId);
           break;
         case 'g':
-          reply = this.handler.handleSelectRegisterThread(threadId);
+          reply = await this.handler.handleSelectRegisterThread(threadId);
           break;
         default:
           reply = unsupported();
@@ -174,23 +174,23 @@ export class GDBServerStub {
       const addr = parseInt(m[3], 16);
       const kind = parseInt(m[4], 16);
       if (m[1] == 'z') {
-        reply = this.handler.handleRemoveBreakpoint(type, addr, kind);
+        reply = await this.handler.handleRemoveBreakpoint(type, addr, kind);
       } else if (m[1] == 'Z') {
-        reply = this.handler.handleAddBreakpoint(type, addr, kind);
+        reply = await this.handler.handleAddBreakpoint(type, addr, kind);
       }
     } else if (m = packet.match(/^qHostInfo/)) {
-      reply = this.handler.handleHostInfo();
+      reply = await this.handler.handleHostInfo();
     } else if (m = packet.match(/^qProcessInfo/)) {
       reply = ok('pid:1;endian:little;')
     } else if (m = packet.match(/^qRegisterInfo([0-9a-zA-Z]+)/)) {
       const registerIndex = parseInt(m[1], 16);
-      reply = this.handler.handleRegisterInfo(registerIndex);
+      reply = await this.handler.handleRegisterInfo(registerIndex);
     } else if (m = packet.match(/^qMemoryRegionInfo:([0-9a-zA-Z]+)/)) {
       const address = parseInt(m[1], 16);
-      reply = this.handler.handleMemoryRegionInfo(address);
+      reply = await this.handler.handleMemoryRegionInfo(address);
     } else if (m = packet.match(/^p([0-9a-zA-Z]+)/)) {
       const registerIndex = parseInt(m[1], 16);
-      reply = this.handler.handleReadRegister(registerIndex);
+      reply = await this.handler.handleReadRegister(registerIndex);
     } else {
       reply = unsupported();
     }

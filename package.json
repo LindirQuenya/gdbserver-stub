@@ -18,5 +18,10 @@
     "babel-jest": "^26.3.0",
     "debug": "^4.1.1",
     "jest": "^26.4.2"
+  },
+  "dependencies": {
+    "blocking-await": "^1.0.0",
+    "deasync": "^0.1.30",
+    "promise-socket": "^8.0.0"
   }
 }
