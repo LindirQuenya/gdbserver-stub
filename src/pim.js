@@ -1,3 +1,4 @@
+
 /**
  * Copyright (c) Tatsuo Nomura <tatsuo.nomura@gmail.com>
  *
@@ -77,5 +78,14 @@ export class PIM extends GDBCommandHandler {
   async handleStartNoAckMode() {
     return ok();
   }
-
+  async handleWriteMemory(address,value) {
+    trace("writeMemory");
+    const result = await this.sendpy({'type': 'M', 'data': {address,value}});
+    return ok();
+  }
+  async handleWriteRegisters(register,value) {
+    trace("writeRegisters");
+    const result = await this.sendpy({'type':'G', 'data':{register,value}});
+    return ok();
+  }
 }
