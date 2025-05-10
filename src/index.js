@@ -11,7 +11,7 @@ import PromiseSocket, {TimeoutError} from "promise-socket";
 
 export async function runServer() {
   const pyConn = new PromiseSocket();
-//  await pyConn.connect(11111, 'localhost');
+  await pyConn.connect(11111, 'localhost');
   const pim = new PIM(pyConn);
   const server = new GDBServerStub(pim);
   server.start("localhost", 2424);
