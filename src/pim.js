@@ -83,9 +83,9 @@ export class PIM extends GDBCommandHandler {
     const result = await this.sendpy({'type': 'M', 'data': {address,value}});
     return ok();
   }
-  async handleWriteRegisters(register,value) {
+  async handleWriteRegisters(data) {
     trace("writeRegisters");
-    const result = await this.sendpy({'type':'G', 'data':{register,value}});
+    const result = await this.sendpy({'type':'G', 'data':{data}});
     return ok();
   }
 }
