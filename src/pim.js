@@ -5,7 +5,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 import { GDBCommandHandler } from './gdb-command-handler.js';
 import { ok, stopped, error, currentThreadId, threadIds, ERROR_BAD_ACCESS_SIZE_FOR_ADDRESS, unsupported } from './gdb-server-stub.js';
 import Debug from 'debug';
@@ -88,4 +87,24 @@ export class PIM extends GDBCommandHandler {
     const result = await this.sendpy({'type':'G', 'data':{data}});
     return ok();
   }
+  async handleAddBreakpoint(address){
+    trace(`addBreakpoint at:${address.toString(16)}`);
+    const result = await this.sendpy({'type':'Z', 'breakpoint':{address}});
+    if(result['status'] === 'ok'){
+      return ok();
+    }else
+    {
+      return error(1);
+    }
+  }
+  async handleRemoveBreakpoint(address) {
+      trace(`removeBreakpoint at:${address.toString(16)}`)
+      const result = await this.sendpy({'type':'z','breakpoint':{address}})
+      situation_status = result['status']
+      if (situation_status === 'ok') {
+        return ok();
+      } else {
+        return error(1);
+      }
+    }
 }
